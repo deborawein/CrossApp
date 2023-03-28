@@ -62,7 +62,9 @@ export function SignUpScreen ( props ) {
             />
         </View>
         <TouchableOpacity style={(validForm) ? styles.button : styles.buttonDisabled}
-            disabled={(validForm) ? false : true}>
+            disabled={(validForm) ? false : true}
+            onPress={()=>props.handler(email,password)}    
+        >
             <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity 
