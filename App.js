@@ -2,10 +2,11 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useState, useEffect } from 'react';
 //firebase
 import { firebaseConfig } from "./config/Config";
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
 //screens
 import { HomeScreen } from './screens/HomeScreen'
@@ -20,6 +21,19 @@ const FbAuth = getAuth(FbApp)
 
 export default function App() {
 
+  const [auth,setAuth] = useState()
+
+  onAuthStateChanged(FbAuth, (user) =>{
+    if(user) {
+      setAuth(user)
+    }
+    else {
+      setAuth(null)
+    }
+  })
+
+
+
   const SignUp = (email, password) => {
     createUserWithEmailAndPassword(FbAuth, email, password)
     .then( () =>(userCredential) => console.log(userCredential))
@@ -30,7 +44,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Signup">
-          { (props) => <SignUpScreen {...props} handler={SignUp} />}
+          { (props) => <SignUpScreen {...props} handler={SignUp} authStatus={auth} />}
         </Stack.Screen>
         <Stack.Screen name="Signin" component={ SignInScreen } />
         <Stack.Screen name="Home" component={ HomeScreen } />

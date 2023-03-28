@@ -39,6 +39,12 @@ export function SignUpScreen ( props ) {
             setValidForm(false)
         }
     })
+
+    useEffect(()=>{
+        if(props.authStatus ){
+          navigation.navigate('Home')
+        }
+      }, [props.authStatus])
     return (
       <View style={styles.page}>
         <Text style={styles.title}>Sign up for an account</Text>
