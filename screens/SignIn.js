@@ -2,50 +2,21 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { SignIpScreen } from "./SignIn";
 
-export function SignUpScreen ( props ) {
+export function SignInScreen ( props ) {
     const [email, setEmail] = useState("")
-    const [validEmail, setValidEmail] = useState(false)
     const [password, setPassword] = useState("")
-    const [validPassword, setValidPassword] = useState(false)
-    const [validForm, setValidForm] = useState(false)
 
     const navigation = useNavigation()
 
-    useEffect( () =>{
-        if(email.indexOf('@') > 0) {
-            setValidEmail(true)
-        }
-        else {
-            setValidEmail(false)
-        }
-    }, [email])
 
-    useEffect( () =>{
-        if(password.length >= 8){
-            setValidPassword(true)
-        }
-        else{
-            setValidPassword(false)
-        }
-    }, [password])
-
-    useEffect(() => {
-        if(validEmail && validPassword) {
-            setValidForm(true)
-        }
-        else {
-            setValidForm(false)
-        }
-    })
     return (
       <View style={styles.page}>
-        <Text style={styles.title}>Sign up for an account</Text>
+        <Text style={styles.title}>Sign in to your account</Text>
         <View style={styles.inputGroup}>
             <Text>Email address</Text>
             <TextInput 
-            style={(validEmail) ? styles.validInput : styles.input}
+            style={styles.input}
             placeholder="you@domain.com"
             value={email}
             onChangeText={(emailText) => setEmail(emailText)}
@@ -54,23 +25,23 @@ export function SignUpScreen ( props ) {
         <View style={styles.inputGroup}>
             <Text>Password</Text>
             <TextInput 
-                style={(validPassword) ? styles.validInput : styles.input}
+                style={styles.input}
                 placeholder='minimum 8 characters'
                 value={password}
                 onChangeText={(passwordText) => setPassword(passwordText)}
                 secureTextEntry={true}
             />
         </View>
-        <TouchableOpacity style={(validForm) ? styles.button : styles.buttonDisabled}
-            disabled={(validForm) ? false : true}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+        <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
         <TouchableOpacity 
             style={styles.signInLink}
-            onPress={() => navigation.navigate("Signin")}
+            onPress={() => navigation.navigate("Signup")}
             >
-            <Text style={styles.SignInText}>Already have an account? Sign in here.</Text>
+            <Text style={styles.SignInText}>Don't have an account? Sign up here.</Text>
         </TouchableOpacity>
+
       </View>
     );
   }
