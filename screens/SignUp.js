@@ -7,11 +7,17 @@ export function SignUpScreen ( props ) {
         <Text style={styles.title}>Sign Up Screen</Text>
         <View style={styles.inputGroup}>
             <Text>Email address</Text>
-            <TextInput style={styles.input} />
+            <TextInput 
+            style={styles.input}
+            placeholder="you@domain.com"
+             />
         </View>
         <View style={styles.inputGroup}>
             <Text>Password</Text>
-            <TextInput style={styles.input} />
+            <TextInput 
+                style={styles.input}
+                placeholder='minimum 8 characters'
+            />
         </View>
         <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Sign Up</Text>
@@ -42,7 +48,7 @@ export function SignUpScreen ( props ) {
     button: {
         backgroundColor: '#000000',
         padding: 10,
-        marginVertical: 10;
+        marginVertical: 10,
     },
     buttonText: {
         color: '#ffffff',
