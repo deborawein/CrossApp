@@ -1,7 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native";
+import { useEffect, useState } from "react";
 
 export function SignUpScreen ( props ) {
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     return (
       <View style={styles.page}>
         <Text style={styles.title}>Sign Up Screen</Text>
@@ -10,6 +13,8 @@ export function SignUpScreen ( props ) {
             <TextInput 
             style={styles.input}
             placeholder="you@domain.com"
+            value={email}
+            onChangeText={(emailText) => setEmail(emailText)}
              />
         </View>
         <View style={styles.inputGroup}>
@@ -17,6 +22,9 @@ export function SignUpScreen ( props ) {
             <TextInput 
                 style={styles.input}
                 placeholder='minimum 8 characters'
+                value={password}
+                onChangeText={(passwordText) => setPassword(passwordText)}
+                secureTextEntry={true}
             />
         </View>
         <TouchableOpacity style={styles.button}>
