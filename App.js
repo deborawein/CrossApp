@@ -3,28 +3,35 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState, useEffect } from 'react';
-//firebase
-import { firebaseConfig } from "./config/Config";
-import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-
-//screens
-import { HomeScreen } from './screens/HomeScreen'
-import { SignUpScreen } from './screens/SignUp'
+// screens
+import { HomeScreen } from './screens/HomeScreen';
+import { SignUpScreen } from './screens/SignUp';
 import { SignInScreen } from './screens/SignIn';
+// firebase modules
+import { firebaseConfig } from './config/Config';
+import { initializeApp } from 'firebase/app'
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  signInWithEmailAndPassword
+} from "firebase/auth"
+import { getFirestore } from 'firebase/firestore'
 
 const Stack = createNativeStackNavigator();
 
-const FbApp = initializeApp(firebaseConfig)
-const FbAuth = getAuth(FbApp) 
+const FBapp = initializeApp(firebaseConfig)
+const FBauth = getAuth(FBapp)
+const FBdb = getFirestore(FBapp)
 
 
 export default function App() {
+  const [auth, setAuth] = useState()
+  const [errorMsg, setErroMsg] = useState()
 
-  const [auth,setAuth] = useState()
-
-  onAuthStateChanged(FbAuth, (user) =>{
-    if(user) {
+  onAuthStateChanged(FBauth, (user) => {
+    if (user) {
       setAuth(user)
     }
     else {
@@ -32,33 +39,48 @@ export default function App() {
     }
   })
 
-
-
   const SignUp = (email, password) => {
-    createUserWithEmailAndPassword(FbAuth, email, password)
-    .then( () =>(userCredential) => console.log(userCredential))
-    .catch( (error) => console.log(error))
+    createUserWithEmailAndPassword(FBauth, email, password)
+      .then((userCredential) => console.log(userCredential))
+      .catch((error) => console.log(error))
   }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Signup">
-          { (props) => <SignUpScreen {...props} handler={SignUp} authStatus={auth} />}
-        </Stack.Screen>
-        <Stack.Screen name="Signin" component={ SignInScreen } />
-        <Stack.Screen name="Home" component={ HomeScreen } />
+  const SignIn = (email, password) => {
+    signInWithEmailAndPassword(FBauth, email, password)
+      .then((userCredential) => console.log(userCredential))
+      .catch((error) => console.log(error))
+  }
 
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+  const SignOut = () => {
+    signOut(FBauth)
+      .then(() => {
+        //now the user is signed out
+      })
+      .catch((error) => console.log(error))
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Signup">
+            {(props) => <SignUpScreen {...props} handler={SignUp} authStatus={auth} />}
+          </Stack.Screen>
+          <Stack.Screen name="Signin">
+            {(props) => <SignInScreen {...props} handler={SignIn} authStatus={auth} />}
+          </Stack.Screen>
+          <Stack.Screen name="Home">
+            {(props) => <HomeScreen {...props} authStatus={auth} signOutHandler={SignOut} add={AddData} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
