@@ -1,47 +1,53 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native";
-import { useEffect, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { useEffect, useState } from 'react'
 import { useNavigation } from "@react-navigation/native";
-import { SignIpScreen } from "./SignIn";
 
 export function SignUpScreen(props) {
-    const [email, setEmail] = useState("")
-    const [validEmail, setValidEmail] = useState(false)
-    const [password, setPassword] = useState("")
-    const [validPassword, setValidPassword] = useState(false)
-    const [validForm, setValidForm] = useState(false)
-  
-    const navigation = useNavigation()
-  
-    useEffect(() => {
-      if (email.indexOf('@') > 0) {
-        setValidEmail(true)
-      }
-      else {
-        setValidEmail(false)
-      }
-    }, [email])
-  
-    useEffect(() => {
-      if (password.length >= 8) {
-        setValidPassword(true)
-      }
-      else {
-        setValidPassword(false)
-      }
-    }, [password])
-  
-    useEffect(() => {
-      if (validEmail && validPassword) {
-        setValidForm(true)
-      }
-      else {
-        setValidForm(false)
-      }
-    })
+  const [email, setEmail] = useState("")
+  const [validEmail, setValidEmail] = useState(false)
+  const [password, setPassword] = useState("")
+  const [validPassword, setValidPassword] = useState(false)
+  const [validForm, setValidForm] = useState(false)
 
+  const navigation = useNavigation()
 
-      return (
+  useEffect(() => {
+    if (email.indexOf('@') > 0) {
+      setValidEmail(true)
+    }
+    else {
+      setValidEmail(false)
+    }
+  }, [email])
+
+  useEffect(() => {
+    if (password.length >= 8) {
+      setValidPassword(true)
+    }
+    else {
+      setValidPassword(false)
+    }
+  }, [password])
+
+  useEffect(() => {
+    if (validEmail && validPassword) {
+      setValidForm(true)
+    }
+    else {
+      setValidForm(false)
+    }
+  })
+
+  useEffect(() => {
+    if (props.authStatus) {
+      // navigate adds a back arrow to the header
+      // navigation.navigate("Home")
+      // reset will make "Home" the root page of the navigation
+      navigation.reset({ index: 0, routes: [{ name: "Home" }] })
+    }
+  }, [props.authStatus])
+
+  return (
     <View style={styles.page}>
       <Text style={styles.title}>Sign up for an account</Text>
       <View style={styles.inputGroup}>
@@ -80,50 +86,49 @@ export function SignUpScreen(props) {
   )
 }
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
+  page: {
+    marginHorizontal: 60,
+  },
+  title: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  input: {
+    backgroundColor: "#ffffff",
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+  },
+  validInput: {
+    borderColor: "green",
+    borderWidth: 1,
+    backgroundColor: "#ffffff",
+    padding: 5,
+  },
+  inputGroup: {
+    marginVertical: 5,
+  },
+  button: {
+    backgroundColor: "#000000",
+    padding: 10,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: "#ffffff",
+    textAlign: "center"
+  },
+  buttonDisabled: {
+    backgroundColor: "#666666",
+    padding: 10,
+    marginVertical: 10,
+  },
+  signInLink: {
+    marginVertical: 5,
+  },
+  signInLinkText: {
+    textAlign: "center",
+  }
 
-    page: {
-      marginHorizontal: 60,  
-    },
-    title: {
-        fontSize: 20,
-        textAlign: 'center',
-        marginTop: 20,
-    },
-    input: {
-        backgroundColor: '#ffffff',
-        padding: 5,
-        borderWidth: 1,
-        borderColor: "#cccccc",
-
-    },
-    validInput: {
-        borderColor: "green",
-        borderWidth: 1,
-        backgroundColor: '#ffffff',
-        padding: 5,
-    },
-    inputGroup: {
-        marginVertical: 5,
-    },
-    button: {
-        backgroundColor: 'green',
-        padding: 10,
-        marginVertical: 10,
-    },
-    buttonText: {
-        color: '#ffffff',
-        textAlign: 'center',
-    },
-    buttonDisabled: {
-        backgroundColor: '#666666',
-        padding: 10,
-        marginVertical: 10,
-    },
-    signInLink: {
-        marginVertical: 5,
-    },
-    SignInText: {
-        textAlign: 'center',
-    }
-  })
+})

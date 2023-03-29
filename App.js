@@ -10,77 +10,114 @@ import { SignInScreen } from './screens/SignIn';
 // firebase modules
 import { firebaseConfig } from './config/Config';
 import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
+import { 
+  getAuth, 
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword
 } from "firebase/auth"
-import { getFirestore } from 'firebase/firestore'
+
+import { 
+  getFirestore,
+  doc,
+  setDoc,
+  addDoc,
+  collection,
+  query,
+  where,
+  onSnapshot
+} from 'firebase/firestore'
 
 const Stack = createNativeStackNavigator();
 
-const FBapp = initializeApp(firebaseConfig)
-const FBauth = getAuth(FBapp)
-const FBdb = getFirestore(FBapp)
-
+const FBapp = initializeApp( firebaseConfig )
+const FBauth = getAuth( FBapp )
+const FBdb = getFirestore( FBapp )
 
 export default function App() {
-  const [auth, setAuth] = useState()
-  const [errorMsg, setErroMsg] = useState()
+  const [auth,setAuth] = useState()
+  const [ errorMsg, setErrorMsg ] = useState()
+  const [ noteData, setNoteData ] = useState([])
 
-  onAuthStateChanged(FBauth, (user) => {
-    if (user) {
-      setAuth(user)
+  onAuthStateChanged( FBauth, (user) => {
+    if( user ) {
+      setAuth( user )
+      console.log( user.uid )
     }
     else {
-      setAuth(null)
+      setAuth( null )
     }
   })
 
-  const SignUp = (email, password) => {
-    createUserWithEmailAndPassword(FBauth, email, password)
-      .then((userCredential) => console.log(userCredential))
-      .catch((error) => console.log(error))
+  useEffect(() => {
+    if( noteData.length === 0 && auth ) {
+      GetData()
+    }
+  })
+
+  const SignUp = ( email, password ) => {
+    createUserWithEmailAndPassword( FBauth, email, password )
+    .then( (userCredential) => console.log(userCredential) )
+    .catch( (error) => console.log(error) )
   }
 
-  const SignIn = (email, password) => {
-    signInWithEmailAndPassword(FBauth, email, password)
-      .then((userCredential) => console.log(userCredential))
-      .catch((error) => console.log(error))
+  const SignIn = ( email, password ) => {
+    signInWithEmailAndPassword( FBauth, email, password )
+    .then( (userCredential) => console.log(userCredential) )
+    .catch( (error) => console.log(error) )
   }
 
   const SignOut = () => {
     signOut(FBauth)
-      .then(() => {
-        //now the user is signed out
-      })
-      .catch((error) => console.log(error))
-
-
-    return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Signup">
-            {(props) => <SignUpScreen {...props} handler={SignUp} authStatus={auth} />}
-          </Stack.Screen>
-          <Stack.Screen name="Signin">
-            {(props) => <SignInScreen {...props} handler={SignIn} authStatus={auth} />}
-          </Stack.Screen>
-          <Stack.Screen name="Home">
-            {(props) => <HomeScreen {...props} authStatus={auth} signOutHandler={SignOut} add={AddData} />}
-          </Stack.Screen>
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
+    .then( () => {
+      //now the user is signed out
+    })
+    .catch((err) => console.log(error) )
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
+  const AddData = async ( note ) => {
+    const userId = auth.uid
+    const path = `users/${userId}/notes`
+    // const data = { id: new Date().getTime(), description: "sample data"}
+    const ref = await addDoc( collection( FBdb, path), note )
+  }
+
+  const GetData = () => {
+    const userId = auth.uid
+    const path = `users/${userId}/notes`
+    const dataQuery = query( collection( FBdb, path ) )
+    const unsubscribe = onSnapshot( dataQuery, ( responseData ) => {
+      let notes = []
+      responseData.forEach( (note) => {
+        notes.push( note.data() )
+      })
+      console.log( notes )
+    })
+  }
+
+  return (
+    <NavigationContainer>
+     <Stack.Navigator>
+        <Stack.Screen name="Signup">
+          { (props) => <SignUpScreen {...props} handler={SignUp} authStatus={auth} /> }
+        </Stack.Screen>
+        <Stack.Screen name="Signin">
+          { (props) => <SignInScreen {...props} handler={SignIn} authStatus={auth} /> }
+        </Stack.Screen>
+        <Stack.Screen name="Home">
+          { (props) => <HomeScreen {...props} authStatus={auth} signOutHandler={SignOut} add={AddData} /> }
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
